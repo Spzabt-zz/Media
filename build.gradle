@@ -1,0 +1,67 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.0.2'
+	id 'io.spring.dependency-management' version '1.1.0'
+	id "com.github.node-gradle.node" version "3.1.1"
+}
+
+group = 'com.monitor'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+tasks.named('bootJar') {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+sourceSets {
+	main {
+		resources {
+			exclude 'js'
+		}
+	}
+}
+
+node {
+	download = true
+}
+
+task buildFront(type: YarnTask) {
+	args = ['build']
+}
+
+yarn_install.dependsOn(yarn_cache_clean)
+buildFront.dependsOn(yarn_install)
+processResources.dependsOn(buildFront)
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '3.0.2'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '3.0.2'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '3.0.2'
+	implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.4'
+
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '3.0.2'
+	implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '6.0.1'
+	implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: '6.0.1'
+
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '3.0.2'
+
+	implementation group: 'org.jsoup', name: 'jsoup', version: '1.15.4'
+	implementation group: 'edu.stanford.nlp', name: 'stanford-corenlp', version: '4.5.2'
+	implementation group: 'edu.stanford.nlp', name: 'stanford-corenlp', version: '4.5.2', classifier: 'models'
+
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '3.0.2'
+
+	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
+	annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
+
+	implementation 'org.springframework.boot:spring-boot-starter'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
